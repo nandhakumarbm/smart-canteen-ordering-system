@@ -1,23 +1,39 @@
 import { Navigate } from 'react-router-dom';
 import RequireAuth from './RequireAuth';
+import PublicRoute from './PublicRoute';
 import Login from '../pages/Auth/Login/Login';
 import { GoogleOAuthProvider } from "@react-oauth/google";
+
+import Home from '../pages/Student/Home';
 
 const clientId = "579898550793-n7ihfdh7b53kkfehe0jmluh272k3aa4t.apps.googleusercontent.com";
 
 const routes = [
-  { path: '/login', element: <GoogleOAuthProvider clientId={clientId}><Login /></GoogleOAuthProvider> },
+  {
+    path: '/login',
+    element: (
+      <PublicRoute>
+        <GoogleOAuthProvider clientId={clientId}>
+          <Login />
+        </GoogleOAuthProvider>
+      </PublicRoute>
+    ),
+  },
 
   {
     path: '/student',
     element: <RequireAuth role="student" />,
-    children: [],
+    children: [
+      { path: '', element: <Home /> },
+    ],
   },
 
   {
     path: '/admin',
     element: <RequireAuth role="admin" />,
-    children: [],
+    children: [
+
+    ],
   },
 
   { path: '*', element: <Navigate to="/login" replace /> },

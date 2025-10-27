@@ -1,19 +1,27 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import GoogleLoginButton from "./GoogleLoginButton";
+import { useLoginMutation } from "../../../Api/authApi";
 import "./Login.css";
 
 function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [login, { isLoading, error }] = useLoginMutation();
 
-  const onSubmit = (data) => {
-    console.log("Login Data:", data);
-    alert(`Login attempt with email: ${data.email}`);
-  };
+  const onSubmit = async (data) => {
+    try {
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      }).unwrap();
 
-  const handleGoogleSuccess = (userData) => {
-    console.log("Google Login Success:", userData);
-    alert(`Welcome ${userData.name}! Email: ${userData.email}`);
+      // Save token to localStorage for further requests
+      localStorage.setItem("smart-canteen-ordering-system", response.token);
+      window.location.reload();
+
+    } catch (err) {
+      console.error("Login error:", err);
+    }
   };
 
   return (
@@ -36,7 +44,7 @@ function Login() {
       {/* Login Form Section */}
       <div className="form-section">
         <h2 className="title">
-          Nandha College #1 Food Order<br />and App
+          #Eat smart<br />Save time
         </h2>
 
         <div className="form-container">
@@ -79,7 +87,7 @@ function Login() {
           </div>
 
           {/* Google Login */}
-          <GoogleLoginButton onSuccess={handleGoogleSuccess} />
+          <GoogleLoginButton />
 
           {/* Terms */}
           <div className="terms">
